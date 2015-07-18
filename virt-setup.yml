@@ -1,0 +1,46 @@
+# ansible-playbook -i inventory.ini virt-setup.yml --ask-vault-pass --ask-pass -c ssh
+
+---
+- hosts: all
+  remote_user: filippo
+  sudo: true
+  vars_files:
+    - secrets.yml
+
+  roles:
+    - role: jnv.unattended-upgrades
+      unattended_mail: 'bip@filippo.io'
+      unattended_mail_only_on_error: true
+      unattended_remove_unused_dependencies: true
+      unattended_automatic_reboot: true
+
+  tasks:
+
+  - slurp: src=/sys/devices/system/clocksource/clocksource0/current_clocksource
+    register: current_clocksource
+  - name: check that the current_clocksource is kvm-clock
+    fail: "wrong current_clocksource: {{ current_clocksource.content | b64decode }}"
+    when: "'{{ current_clocksource.content | b64decode }}' != 'kvm-clock\n'"
+
+  - user: name=filippo
+  - authorized_key: user=filippo key=https://github.com/FiloSottile.keys
+
+  - apt: upgrade=dist update_cache=yes
+  - apt: name={{ item }}
+    with_items:
+      - psmisc
+      - joe
+      - htop
+      - ncdu
+      - tree
+      - ssmtp
+
+  - template: src=ssmtp.conf dest=/etc/ssmtp/ssmtp.conf owner=root mode=0644
+
+  - lineinfile: "dest=/etc/sudoers regexp='^filippo' line='filippo ALL=(ALL) NOPASSWD: ALL'"
+
+  - lineinfile: dest=/etc/ssh/sshd_config regexp=^PermitRootLogin line="PermitRootLogin no"
+  - lineinfile: dest=/etc/ssh/sshd_config regexp=^ChallengeResponseAuthentication line="ChallengeResponseAuthentication no"
+  - lineinfile: dest=/etc/ssh/sshd_config regexp=^PasswordAuthentication line="PasswordAuthentication no"
+  - lineinfile: dest=/etc/ssh/sshd_config regexp=^X11Forwarding line="X11Forwarding no"
+  - service: name=ssh state=reloaded
