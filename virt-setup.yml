@@ -34,6 +34,7 @@
       - ncdu
       - tree
       - ssmtp
+      - bsd-mailx
 
   - template: src=ssmtp.conf dest=/etc/ssmtp/ssmtp.conf owner=root mode=0644
 
