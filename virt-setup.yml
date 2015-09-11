@@ -1,9 +1,13 @@
-# ansible-playbook -i inventory.ini virt-setup.yml --ask-vault-pass --ask-pass -c ssh
-
 ---
 - hosts: all
-  remote_user: filippo
-  sudo: true
+  remote_user: root
+  gather_facts: false
+  tasks:
+    - raw: apt-get install -y python
+
+
+- hosts: all
+  remote_user: root
   vars_files:
     - secrets.yml
 
@@ -16,11 +20,14 @@
 
   tasks:
 
-  - slurp: src=/sys/devices/system/clocksource/clocksource0/current_clocksource
-    register: current_clocksource
-  - name: check that the current_clocksource is kvm-clock
-    fail: "wrong current_clocksource: {{ current_clocksource.content | b64decode }}"
-    when: "'{{ current_clocksource.content | b64decode }}' != 'kvm-clock\n'"
+  - copy: dest=/etc/timezone content=Etc/UTC
+  - command: dpkg-reconfigure -f noninteractive tzdata
+
+  # - slurp: src=/sys/devices/system/clocksource/clocksource0/current_clocksource
+  #   register: current_clocksource
+  # - name: check that the current_clocksource is kvm-clock
+  #   fail: "wrong current_clocksource: {{ current_clocksource.content | b64decode }}"
+  #   when: "'{{ current_clocksource.content | b64decode }}' != 'kvm-clock\n'"
 
   - user: name=filippo
   - authorized_key: user=filippo key=https://github.com/FiloSottile.keys
