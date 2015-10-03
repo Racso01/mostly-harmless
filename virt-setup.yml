@@ -29,7 +29,7 @@
   #   fail: "wrong current_clocksource: {{ current_clocksource.content | b64decode }}"
   #   when: "'{{ current_clocksource.content | b64decode }}' != 'kvm-clock\n'"
 
-  - user: name=filippo
+  - user: name=filippo shell=/bin/zsh
   - authorized_key: user=filippo key=https://github.com/FiloSottile.keys
 
   - apt: upgrade=dist update_cache=yes
@@ -43,6 +43,7 @@
       - ssmtp
       - bsd-mailx
       - daemontools-run
+      - zsh
 
   - template: src=ssmtp.conf dest=/etc/ssmtp/ssmtp.conf owner=root mode=0644
 
