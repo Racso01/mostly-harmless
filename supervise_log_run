@@ -1,0 +1,6 @@
+#!/bin/sh
+mkdir ./main
+chown -R USER:USER ./main
+
+exec setuidgid USER multilog \
+    t s104857600 n100 '!tai64nlocal' '!gzip' ./main

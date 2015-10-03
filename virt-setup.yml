@@ -42,6 +42,7 @@
       - tree
       - ssmtp
       - bsd-mailx
+      - daemontools-run
 
   - template: src=ssmtp.conf dest=/etc/ssmtp/ssmtp.conf owner=root mode=0644
 
@@ -52,3 +53,8 @@
   - lineinfile: dest=/etc/ssh/sshd_config regexp=^PasswordAuthentication line="PasswordAuthentication no"
   - lineinfile: dest=/etc/ssh/sshd_config regexp=^X11Forwarding line="X11Forwarding no"
   - service: name=ssh state=reloaded
+
+  - file: path=/var/lib/supervise/TEMPLATE state=directory mode=1755
+  - copy: src=supervise_run dest=/var/lib/supervise/TEMPLATE/run mode=0755
+  - file: path=/var/lib/supervise/TEMPLATE/log state=directory mode=0755
+  - copy: src=supervise_log_run dest=/var/lib/supervise/TEMPLATE/log/run mode=0755
