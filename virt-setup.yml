@@ -56,8 +56,8 @@
   - file: path=/var/lib/supervise/TEMPLATE/log state=directory mode=0755
   - copy: src=supervise_log_run dest=/var/lib/supervise/TEMPLATE/log/run mode=0755
 
-  - lineinfile: dest=/etc/ssh/sshd_config regexp=^PermitRootLogin line="PermitRootLogin no"
-  - lineinfile: dest=/etc/ssh/sshd_config regexp=^ChallengeResponseAuthentication line="ChallengeResponseAuthentication no"
-  - lineinfile: dest=/etc/ssh/sshd_config regexp=^PasswordAuthentication line="PasswordAuthentication no"
-  - lineinfile: dest=/etc/ssh/sshd_config regexp=^X11Forwarding line="X11Forwarding no"
+  - lineinfile: dest=/etc/ssh/sshd_config regexp='^#?\s*PermitRootLogin' line="PermitRootLogin no"
+  - lineinfile: dest=/etc/ssh/sshd_config regexp='^#?\s*ChallengeResponseAuthentication' line="ChallengeResponseAuthentication no"
+  - lineinfile: dest=/etc/ssh/sshd_config regexp='^#?\s*PasswordAuthentication' line="PasswordAuthentication no"
+  - lineinfile: dest=/etc/ssh/sshd_config regexp='^#?\s*X11Forwarding' line="X11Forwarding no"
   - service: name=ssh state=reloaded
