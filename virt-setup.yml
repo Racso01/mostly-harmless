@@ -46,8 +46,11 @@
       - zsh
       - sudo
       - mosh
+      - apt-listchanges
 
   - template: src=ssmtp.conf dest=/etc/ssmtp/ssmtp.conf owner=root mode=0644
+
+  - copy: src=listchanges.conf dest=/etc/apt/listchanges.conf owner=root mode=0644
 
   - lineinfile: "dest=/etc/sudoers regexp='^filippo' line='filippo ALL=(ALL) NOPASSWD: ALL'"
 
