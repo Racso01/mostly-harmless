@@ -47,6 +47,10 @@
       - sudo
       - mosh
       - apt-listchanges
+      - command-not-found
+  
+  - command: update-command-not-found
+  - lineinfile: dest=/home/filippo/.zshrc line="[[ -r /etc/zsh_command_not_found ]] && . /etc/zsh_command_not_found"
 
   - template: src=ssmtp.conf dest=/etc/ssmtp/ssmtp.conf owner=root mode=0644
 
