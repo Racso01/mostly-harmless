@@ -1,0 +1,16 @@
+/etc/config -- git tracked locally
+/etc/updater/conf.d/opkg-auto.lua
+/etc/updater/conf.d/user.lua
+
+Wireguard
+luci-proto-wireguard is broken https://gitlab.labs.nic.cz/turris/openwrt/issues/191
+luci-app-wireguard manually installed
+pkgupdate possibly frozen when luci-proto-wireguard in opkg-auto
+
+kresd
+Listens on *, breaking cross-interface UDP https://gitlab.labs.nic.cz/turris/turris-os-packages/issues/196
+Local workaround by listening on each interface instead in /etc/init.d/kresd
+    for name, addr_list in pairs(net.interfaces()) do
+            net.listen(addr_list)
+    end
+^ still requires "/etc/init.d/kresd restart" because first start is too early (?)

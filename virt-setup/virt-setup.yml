@@ -1,19 +1,13 @@
 ---
 - hosts: all
-  remote_user: root
-  gather_facts: false
-  tasks:
-    - raw: apt-get install -y python
-
-
-- hosts: all
-  remote_user: root
+  remote_user: filippo
+  become: yes
   vars_files:
     - secrets.yml
 
   roles:
     - role: jnv.unattended-upgrades
-      unattended_mail: 'bip@filippo.io'
+      unattended_mail: 'upgrades@bip.filippo.io'
       unattended_mail_only_on_error: true
       unattended_remove_unused_dependencies: true
       unattended_automatic_reboot: true
@@ -23,16 +17,10 @@
   - copy: dest=/etc/timezone content=Etc/UTC
   - command: dpkg-reconfigure -f noninteractive tzdata
 
-  # - slurp: src=/sys/devices/system/clocksource/clocksource0/current_clocksource
-  #   register: current_clocksource
-  # - name: check that the current_clocksource is kvm-clock
-  #   fail: "wrong current_clocksource: {{ current_clocksource.content | b64decode }}"
-  #   when: "'{{ current_clocksource.content | b64decode }}' != 'kvm-clock\n'"
-
   - user: name=filippo shell=/bin/zsh
   - authorized_key: user=filippo key=https://github.com/FiloSottile.keys
 
-  - apt: upgrade=dist update_cache=yes
+  - apt: update_cache=yes
   - apt: name={{ item }}
     with_items:
       - psmisc
@@ -42,29 +30,51 @@
       - tree
       - ssmtp
       - bsd-mailx
-      - daemontools-run
       - zsh
       - sudo
       - mosh
       - apt-listchanges
       - command-not-found
-  
+
   - command: update-command-not-found
   - lineinfile: dest=/home/filippo/.zshrc create=yes line="[[ -r /etc/zsh_command_not_found ]] && . /etc/zsh_command_not_found"
 
-  - template: src=ssmtp.conf dest=/etc/ssmtp/ssmtp.conf owner=root mode=0644
+  - template: src=ssmtp.conf.j2 dest=/etc/ssmtp/ssmtp.conf owner=root mode=0644
 
   - copy: src=listchanges.conf dest=/etc/apt/listchanges.conf owner=root mode=0644
 
   - lineinfile: "dest=/etc/sudoers regexp='^filippo' line='filippo ALL=(ALL) NOPASSWD: ALL'"
 
-  - file: path=/var/lib/supervise/TEMPLATE state=directory mode=1755
-  - copy: src=supervise_run dest=/var/lib/supervise/TEMPLATE/run mode=0755
-  - file: path=/var/lib/supervise/TEMPLATE/log state=directory mode=0755
-  - copy: src=supervise_log_run dest=/var/lib/supervise/TEMPLATE/log/run mode=0755
-
   - lineinfile: dest=/etc/ssh/sshd_config regexp='^#?\s*PermitRootLogin' line="PermitRootLogin no"
   - lineinfile: dest=/etc/ssh/sshd_config regexp='^#?\s*ChallengeResponseAuthentication' line="ChallengeResponseAuthentication no"
   - lineinfile: dest=/etc/ssh/sshd_config regexp='^#?\s*PasswordAuthentication' line="PasswordAuthentication no"
-  - lineinfile: dest=/etc/ssh/sshd_config regexp='^#?\s*X11Forwarding' line="X11Forwarding no"
   - service: name=ssh state=reloaded
+
+- hosts: kvm
+  remote_user: filippo
+  become: yes
+  tasks:
+
+  - slurp: src=/sys/devices/system/clocksource/clocksource0/current_clocksource
+    register: current_clocksource
+  - name: check that the current_clocksource is kvm-clock
+    fail: "wrong current_clocksource: {{ current_clocksource.content | b64decode }}"
+    when: "'{{ current_clocksource.content | b64decode }}' != 'kvm-clock\n'"
+
+- hosts: tunnelbroker
+  remote_user: filippo
+  become: yes
+  tasks:
+
+  - template: src=20-tunnelbroker.cfg.j2 dest=/etc/network/interfaces.d/20-tunnelbroker.cfg
+  - lineinfile: dest=/etc/network/interfaces line="source /etc/network/interfaces.d/20-tunnelbroker.cfg"
+
+- hosts: tor
+  remote_user: filippo
+  become: yes
+  # TODO
+
+- hosts: forwardproxy
+  remote_user: filippo
+  become: yes
+  # https://caddyserver.com/download/linux/arm7?plugins=http.forwardproxy&license=personal

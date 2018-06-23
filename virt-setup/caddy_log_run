@@ -1,0 +1,6 @@
+#!/bin/sh
+mkdir ./main
+chown -R www-data:www-data ./main
+
+exec setuidgid www-data multilog \
+    t s104857600 n100 '!tai64nlocal' '!gzip' ./main

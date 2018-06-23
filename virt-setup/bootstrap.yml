@@ -1,0 +1,9 @@
+---
+- hosts: all
+  remote_user: root
+  gather_facts: false
+  tasks:
+    - raw: apt-get install -y python
+    - lineinfile: "dest=/etc/sudoers regexp='^filippo' line='filippo ALL=(ALL) NOPASSWD: ALL'"
+    - user: name=filippo shell=/bin/zsh
+    - authorized_key: user=filippo key=https://github.com/FiloSottile.keys

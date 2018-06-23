@@ -1,0 +1,14 @@
+SOCKSPort 0
+Log notice file /var/log/tor/notices.log
+ControlPort 9051
+DisableDebuggerAttachment 0
+ORPort 9001
+Address {{ public_domain }}
+Nickname {{ tor_nickname }}
+RelayBandwidthRate 1000 KBytes  # Throttle traffic to 1000KB/s (8000Kbps)
+RelayBandwidthBurst 2000 KBytes # But allow bursts up to 2000KB (16000Kb)
+AccountingMax 80 GBytes
+AccountingStart day 00:00
+ContactInfo Filippo Valsorda <tor AT filippo dot io>
+# DirPort 9030 # what port to advertise for directory connections
+ExitPolicy reject *:* # no exits allowed

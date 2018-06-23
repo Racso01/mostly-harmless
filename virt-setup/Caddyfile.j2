@@ -1,0 +1,11 @@
+{{ public_domain }} {
+	tls caddy@bip.filippo.io
+	forwardproxy {
+		basicauth filippo {{ forwardproxy_password }}
+		hide_ip
+		hide_via
+		probe_resistance {{ forwardproxy_secret }}.localhost
+		serve_pac /proxy-{{ forwardproxy_secret }}.pac
+	}
+	redir / https://filippo.io/ 302
+}

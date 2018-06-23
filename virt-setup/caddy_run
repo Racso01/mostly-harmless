@@ -1,0 +1,9 @@
+#!/bin/sh
+echo starting
+exec 2>&1
+
+cd /etc/caddy
+ulimit -n 4096
+setcap cap_net_bind_service=+ep /usr/local/bin/caddy
+exec setuidgid www-data env HOME=/etc/caddy /usr/local/bin/caddy \
+	-agree -pidfile /var/run/caddy.pid

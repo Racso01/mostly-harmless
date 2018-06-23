@@ -1,0 +1,30 @@
+---
+- hosts: serial.home.arpa
+  remote_user: pi
+  become: yes
+  tasks:
+  - user: name=filippo groups=dialout shell=/bin/bash
+  - copy:
+      dest: "/etc/sudoers.d/010_nopasswd"
+      content: "filippo ALL=(ALL) NOPASSWD: ALL"
+      mode: 0600
+  - authorized_key: user="{{ item }}" key="ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDWRM9S+MWm5WPOhvVWTUfCURPjdQ2B3NUJtEeDMTLS+9LNpHOvSroHBT0UdjgHBRKFqctWj0cKz2dJ+I93mGYQOvePuSwnTXdwj04xTrX2nW7Spi7MdWAkFHyreoCyUYW4sg6zGCYyBUUYrRqxKpRl6PPArDzjKh9BgzvAcXPwk0GjpTGkt94RemifrBbrvwp7DC4CDVo+kzve3dsIy9B+WHx+4R95rj23OnEP8DhAAevt1/m0SjmxKtEPURnZSP4Y9gH50hvrYl5hlNeZdERfS9PwmbjprH7miXMzx3wZQgV6+SuHU9vZxCejx22hcnNv8gxO6xbtQMhLX8OVe2wN"
+    with_items:
+    - pi
+    - filippo
+  - user: name=pi password="!"
+
+  # manually installed minicom and tmux
+
+  - lineinfile: dest=/etc/ssh/sshd_config regexp='^#?\s*{{ item }}' line="{{ item }} no"
+    with_items:
+      - PermitRootLogin
+      - ChallengeResponseAuthentication
+      - PasswordAuthentication
+  - service: name=ssh state=reloaded
+
+  - lineinfile: dest=/boot/config.txt line="dtoverlay=dwc2"
+  - replace: dest=/boot/cmdline.txt regexp="rootwait$" replace="rootwait dtoverlay=dwc2"
+
+  # sudo modprobe g_mass_storage file=/home/pi/alpine-standard-3.7.0-x86_64.iso
+  # TODO: g_multi to use g_serial instead of the FTDI cable
