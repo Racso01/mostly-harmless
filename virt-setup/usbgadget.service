@@ -1,0 +1,11 @@
+[Unit]
+Description=USB gadget
+After=systemd-modules-load.service
+ 
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/local/bin/usbgadget.sh
+ 
+[Install]
+WantedBy=sysinit.target

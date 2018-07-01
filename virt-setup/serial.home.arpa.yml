@@ -26,5 +26,15 @@
   - lineinfile: dest=/boot/config.txt line="dtoverlay=dwc2"
   - replace: dest=/boot/cmdline.txt regexp="rootwait$" replace="rootwait dtoverlay=dwc2"
 
-  # sudo modprobe g_mass_storage file=/home/pi/alpine-standard-3.7.0-x86_64.iso
-  # TODO: g_multi to use g_serial instead of the FTDI cable
+  - lineinfile: dest=/etc/modules line=g_multi state=absent
+  - file: dest=/etc/modprobe.d/multigadget.conf state=absent
+
+  - lineinfile: dest=/etc/modules line=libcomposite
+  - copy: src=usbgadget.sh dest=/usr/local/bin/usbgadget.sh mode=0755
+  - copy: src=usbgadget.service dest=/etc/systemd/system/usbgadget.service
+  # - get_url:
+  #     url: http://dl-cdn.alpinelinux.org/alpine/v3.8/releases/x86_64/alpine-standard-3.8.0-x86_64.iso
+  #     checksum: "sha256:9da0f7c2dd8ea55a542b19150012f3fa4e94724eb67cb3777b8027a872e3cc30"
+  #     dest: /var/lib/alpine-standard-3.8.0-x86_64.iso
+  - copy: src=alpine-standard-3.8.0-x86_64.iso dest=/var/lib/alpine-standard-3.8.0-x86_64.iso
+  - systemd: daemon_reload=yes name=usbgadget.service state=started enabled=yes
