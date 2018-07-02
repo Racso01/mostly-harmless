@@ -1,0 +1,20 @@
+---
+- apt_key:
+    keyserver: keys.gnupg.net
+    id: A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89
+- apt_repository:
+    repo: "deb http://deb.torproject.org/torproject.org {{ ansible_distribution_release }} main"
+- apt:
+    update_cache: yes
+    name:
+      - deb.torproject.org-keyring
+      - tor
+      - tor-arm
+- template:
+    src: torrc.j2
+    dest: /etc/tor/torrc
+- service:
+    name: tor
+    state: started
+    enabled: yes
+

@@ -1,0 +1,7 @@
+- template:
+    src: 20-tunnelbroker.cfg.j2
+    dest: /etc/network/interfaces.d/20-tunnelbroker.cfg
+
+- lineinfile:
+    dest: /etc/network/interfaces
+    line: source /etc/network/interfaces.d/20-tunnelbroker.cfg

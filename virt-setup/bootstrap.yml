@@ -1,9 +1,9 @@
 ---
+# ansible-playbook bootstrap.yml --user=REMOTE_USER --ask-pass --ask-become-pass --limit=MACHINE
 - hosts: all
-  remote_user: root
   gather_facts: false
   tasks:
     - raw: apt-get install -y python
-    - lineinfile: "dest=/etc/sudoers regexp='^filippo' line='filippo ALL=(ALL) NOPASSWD: ALL'"
-    - user: name=filippo shell=/bin/zsh
-    - authorized_key: user=filippo key=https://github.com/FiloSottile.keys
+    - user: name=filippo
+    - copy: dest="/etc/sudoers.d/010_nopasswd" content="filippo ALL=(ALL) NOPASSWD: ALL" mode=0600
+    - authorized_key: user=filippo key="{{ ssh_key }}"

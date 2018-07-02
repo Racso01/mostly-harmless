@@ -1,0 +1,32 @@
+---
+
+- name: /etc/sudoers.d/010_nopasswd
+  copy:
+    dest: "/etc/sudoers.d/010_nopasswd"
+    content: "filippo ALL=(ALL) NOPASSWD: ALL"
+    mode: 0600
+- name: revert /etc/sudoers
+  lineinfile:
+    dest: /etc/sudoers
+    regexp: '^filippo'
+    state: absent
+
+- authorized_key:
+    user: filippo
+    key: "{{ ssh_key }}"
+- user:
+    name: "{{ item }}"
+    password: "!"
+  with_items: "{{ disabled_users | default([]) }}"
+
+- name: /etc/ssh/sshd_config
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: '^#?\s*{{ item }}'
+    line: "{{ item }} no"
+  with_items:
+    - PermitRootLogin
+    - ChallengeResponseAuthentication
+    - PasswordAuthentication
+  notify:
+    - restart ssh

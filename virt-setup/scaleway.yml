@@ -1,0 +1,9 @@
+---
+- hosts: scaleway
+  roles:
+    - common
+    - debian
+    - tunnelbroker
+    - tor
+    - forwardproxy
+    # TODO: wireguard IPv6

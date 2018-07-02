@@ -1,0 +1,51 @@
+---
+- name: /root/caddy_linux_arm7_custom_personal
+  file:
+    path: /root/caddy_linux_arm7_custom_personal
+    state: directory
+- unarchive:
+    src: https://caddyserver.com/download/linux/arm7?plugins=http.forwardproxy&license=personal
+    dest: /root/caddy_linux_arm7_custom_personal/
+    remote_src: yes
+- name: /usr/local/bin/caddy
+  copy:
+    src: /root/caddy_linux_arm7_custom_personal/caddy
+    dest: /usr/local/bin/caddy
+    mode: 0755
+    remote_src: yes
+- capabilities:
+    path: /usr/local/bin/caddy
+    cap: cap_net_bind_service=+ep
+- name: /etc/caddy
+  file:
+    path: /etc/caddy
+    owner: root
+    group: www-data
+    state: directory
+- name: /etc/ssl/caddy
+  file:
+    path: /etc/ssl/caddy
+    owner: root
+    group: www-data
+    mode: 0770
+    state: directory
+- template:
+    src: Caddyfile.j2
+    dest: /etc/caddy/Caddyfile
+    owner: www-data
+    group: www-data
+    mode: 0440
+  vars:
+    forwardproxy_password: "{{ lookup('passwordstore', 'other/virt-setup subkey=forwardproxy_password')}}"
+    forwardproxy_secret: "{{ lookup('passwordstore', 'other/virt-setup subkey=forwardproxy_secret')}}"
+- name: caddy.service
+  copy:
+    src: /root/caddy_linux_arm7_custom_personal/init/linux-systemd/caddy.service
+    dest: /etc/systemd/system/caddy.service
+    mode: 0644
+    remote_src: yes
+- systemd:
+    daemon_reload: yes
+    name: caddy.service
+    state: started
+    enabled: yes

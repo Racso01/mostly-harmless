@@ -1,0 +1,6 @@
+---
+- name: dpkg-reconfigure tzdata
+  command: dpkg-reconfigure -f noninteractive tzdata
+
+- name: update-command-not-found
+  command: update-command-not-found

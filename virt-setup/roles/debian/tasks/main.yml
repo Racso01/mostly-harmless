@@ -1,0 +1,48 @@
+---
+- name: /etc/timezone
+  copy: dest=/etc/timezone content=Etc/UTC
+  notify: dpkg-reconfigure tzdata
+
+- apt:
+    update_cache: yes
+    name:
+      - psmisc
+      - joe
+      - htop
+      - ncdu
+      - tree
+      - ssmtp
+      - bsd-mailx
+      - zsh
+      - sudo
+      - mosh
+      - apt-listchanges
+      - command-not-found
+  notify: update-command-not-found
+
+- name: set shell to /bin/zsh
+  user:
+    name: filippo
+    shell: /bin/zsh
+
+- name: install zsh_command_not_found
+  lineinfile:
+    dest: /home/filippo/.zshrc
+    create: yes
+    line: "[[ -r /etc/zsh_command_not_found ]] && . /etc/zsh_command_not_found"
+
+- name: /etc/ssmtp/ssmtp.conf
+  template:
+    src: ssmtp.conf.j2
+    dest: /etc/ssmtp/ssmtp.conf
+    owner: root
+    mode: 0644
+  vars:
+    ssmtp_password: "{{ lookup('passwordstore', 'other/virt-setup subkey=ssmtp_password')}}"
+
+- name: /etc/apt/listchanges.conf
+  copy:
+    src: listchanges.conf
+    dest: /etc/apt/listchanges.conf
+    owner: root
+    mode: 0644
