@@ -1,7 +1,11 @@
-- template:
-    src: 20-tunnelbroker.cfg.j2
-    dest: /etc/network/interfaces.d/20-tunnelbroker.cfg
-
-- lineinfile:
-    dest: /etc/network/interfaces
-    line: source /etc/network/interfaces.d/20-tunnelbroker.cfg
+---
+- name: he-ipv6.service
+  template:
+    src: he-ipv6.service.j2
+    dest: /etc/systemd/system/he-ipv6.service
+    mode: 0644
+- systemd:
+    daemon_reload: yes
+    name: he-ipv6.service
+    state: started
+    enabled: yes

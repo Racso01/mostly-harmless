@@ -1,0 +1,17 @@
+[Unit]
+Description=he.net IPv6 tunnel
+After=network.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/bash -c "/bin/ip tunnel add he-ipv6 mode sit remote {{ tunnelbroker_remote }} local $(ip -f inet -o addr show eth0 | cut -d' ' -f 7 | cut -d/ -f 1) ttl 255"
+ExecStart=/bin/ip link set he-ipv6 up mtu 1480
+ExecStart=/bin/ip addr add {{ tunnelbroker_address }} dev he-ipv6
+ExecStart=/bin/ip -6 route add ::/0 dev he-ipv6
+ExecStop=/bin/ip -6 route del ::/0 dev he-ipv6
+ExecStop=/bin/ip link set he-ipv6 down
+ExecStop=/bin/ip tunnel del he-ipv6
+
+[Install]
+WantedBy=multi-user.target

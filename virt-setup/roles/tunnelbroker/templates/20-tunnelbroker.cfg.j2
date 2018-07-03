@@ -1,8 +1,0 @@
-auto he-ipv6
-iface he-ipv6 inet6 v4tunnel
-        address {{ tunnelbroker_net }}::2
-        netmask 64
-        endpoint 216.66.84.42
-        local {{ tunnelbroker_local }}
-        ttl 255
-        gateway {{ tunnelbroker_net }}::1
