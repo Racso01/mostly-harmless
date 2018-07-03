@@ -1,0 +1,7 @@
+2018-07-02
+
+Shutdown hangs for minutes (forever?) for some reason on
+    [ ***] A stop job is running for /run/user/1000
+and something about network interfaces, with errors about nbd.
+
+HTTP pages loaded over the proxy return 502 Bad Gateway. HTTPS works.
