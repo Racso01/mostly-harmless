@@ -5,5 +5,10 @@
   tasks:
     - raw: apt-get install -y python
     - user: name=filippo
-    - copy: dest="/etc/sudoers.d/010_nopasswd" content="filippo ALL=(ALL) NOPASSWD: ALL" mode=0600
-    - authorized_key: user=filippo key="{{ ssh_key }}"
+    - copy:
+        dest: "/etc/sudoers.d/010_nopasswd"
+        content: "filippo ALL=(ALL) NOPASSWD: ALL"
+        mode: 0600
+    - authorized_key:
+        user: filippo
+        key: "{{ ssh_key }}"

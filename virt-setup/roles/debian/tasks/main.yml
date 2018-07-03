@@ -1,6 +1,8 @@
 ---
 - name: /etc/timezone
-  copy: dest=/etc/timezone content=Etc/UTC
+  copy:
+    dest: /etc/timezone
+    content: "Etc/UTC\n"
   notify: dpkg-reconfigure tzdata
 
 - apt:
@@ -18,6 +20,7 @@
       - mosh
       - apt-listchanges
       - command-not-found
+      - dnsutils
   notify: update-command-not-found
 
 - name: set shell to /bin/zsh

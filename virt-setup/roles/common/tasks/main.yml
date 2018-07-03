@@ -14,7 +14,8 @@
 - authorized_key:
     user: filippo
     key: "{{ ssh_key }}"
-- user:
+- name: disable users
+  user:
     name: "{{ item }}"
     password: "!"
   with_items: "{{ disabled_users | default([]) }}"
