@@ -3,7 +3,7 @@ Log notice file /var/log/tor/notices.log
 ControlPort 9051
 DisableDebuggerAttachment 0
 ORPort 9001
-Address {{ public_domain }}
+Address {{ inventory_hostname }}
 Nickname {{ tor_nickname }}
 RelayBandwidthRate 1000 KBytes  # Throttle traffic to 1000KB/s (8000Kbps)
 RelayBandwidthBurst 2000 KBytes # But allow bursts up to 2000KB (16000Kb)
