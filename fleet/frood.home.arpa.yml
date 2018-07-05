@@ -1,0 +1,7 @@
+---
+- hosts: frood.home.arpa
+  roles:
+    - common
+    - frood
+  tasks:
+    - debug: msg="remember to run $ ssh frood.home.arpa sudo lbu ci"

@@ -1,0 +1,70 @@
+---
+- name: allow root login from the USB serial port
+  lineinfile:
+    dest: /etc/securetty
+    line: ttyACM0
+- name: enable a getty on the USB serial port
+  lineinfile:
+    dest: /etc/inittab
+    line: "ttyACM0::respawn:/sbin/getty -L ttyACM0 115200 vt100"
+
+- name: /etc/apk/repositories
+  copy:
+    dest: /etc/apk/repositories
+    src: apk_repositories
+- name: apk cache
+  file:
+    path: /etc/apk/cache
+    state: link
+    src: /media/sda1/cache
+- apk:
+    update_cache: yes
+    name:
+      - alpine-base
+      - e2fsprogs
+      - joe
+      - openntpd
+      - openssh
+      - parted
+      - python
+      - sfdisk
+      - sudo
+
+- name: LBU_MEDIA
+  lineinfile:
+    dest: /etc/lbu/lbu.conf
+    regexp: '^#?\s*LBU_MEDIA'
+    line: "LBU_MEDIA=sda1"
+- name: BACKUP_LIMIT
+  lineinfile:
+    dest: /etc/lbu/lbu.conf
+    regexp: '^#?\s*BACKUP_LIMIT'
+    line: "BACKUP_LIMIT=1024"
+
+- name: /etc/fstab
+  copy:
+    dest: /etc/fstab
+    src: fstab
+
+- name: /etc/ssh/authorized_keys
+  file:
+    path: /etc/ssh/authorized_keys
+    state: directory
+    mode: 0755
+- name: /etc/ssh/authorized_keys/filippo
+  authorized_key:
+    user: filippo
+    key: "{{ ssh_key }}"
+    path: /etc/ssh/authorized_keys/filippo
+    manage_dir: false
+- name: AuthorizedKeysFile
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: '^#?\s*AuthorizedKeysFile'
+    line: "AuthorizedKeysFile /etc/ssh/authorized_keys/%u"
+
+- name: /etc/passwd
+  replace:
+    dest: /etc/passwd
+    regexp: '^filippo:x:([^:\n]*):([^:\n]*):[^:\n]*:[^:\n]*:[^:\n]*$'
+    replace: 'filippo:x:\1:\2:Filippo Valsorda:/var/empty:/bin/ash'

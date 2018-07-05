@@ -3,8 +3,18 @@
 - hosts: all
   gather_facts: false
   tasks:
-    - raw: apt-get install -y python
+    - raw: "sh -c 'hash python || ( apt-get install -y python || apk add python )'"
+    - shell: "hash sudo || ( apt-get install -y sudo || apk add sudo )"
     - user: name=filippo
+      register: user_result
+      ignore_errors: true
+    # https://github.com/ansible/ansible/issues/23944
+    - shell: "grep filippo /etc/shadow || adduser -D filippo"
+      when: user_result.failed
+    - replace:
+        dest: /etc/shadow
+        regexp: '^filippo:[^:]*:'
+        replace: 'filippo:*:' # no password allowed, but not locked
     - copy:
         dest: "/etc/sudoers.d/010_nopasswd"
         content: "filippo ALL=(ALL) NOPASSWD: ALL"
