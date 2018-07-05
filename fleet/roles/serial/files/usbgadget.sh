@@ -23,8 +23,8 @@ echo "Pi Zero Gadget"   > strings/0x409/product
 
 mkdir -p functions/acm.usb0                # serial
 mkdir -p functions/mass_storage.usb0/lun.0 # USB drive
-echo 1                                           > functions/mass_storage.usb0/lun.0/cdrom
-echo "/var/lib/alpine-standard-3.8.0-x86_64.iso" > functions/mass_storage.usb0/lun.0/file
+echo 1                                  > functions/mass_storage.usb0/lun.0/cdrom
+echo "/var/lib/alpine-frood-x86_64.iso" > functions/mass_storage.usb0/lun.0/file
 
 mkdir -p configs/c.1
 echo 250 > configs/c.1/MaxPower

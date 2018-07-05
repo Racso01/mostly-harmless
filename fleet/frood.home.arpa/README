@@ -1,0 +1,14 @@
+Build the custom image to boot on frood.home.arpa.
+
+https://wiki.alpinelinux.org/wiki/How_to_make_a_custom_ISO_image_with_mkimage
+
+The alternative would be to build an image with modloop enabled,
+and install zfs on the overlay, which sounds fun and clean, but
+apparently is a mess: https://bugs.alpinelinux.org/issues/7285
+
+Also, this way we get to add a serial console at boot.
+
+$ docker build -t frood.home.arpa frood.home.arpa
+$ docker run -it --rm -v $PWD/roles/serial/files:/iso frood.home.arpa
+
+TODO: disarm the apk key

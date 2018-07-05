@@ -1,0 +1,11 @@
+zpool create -O compression=lz4 -O atime=off -o ashift=12 -o autoexpand=on tank mirror sdb sdc
+zfs create -o mountpoint=none -o canmount=off tank/frood
+zfs create -o mountpoint=/var tank/frood/var
+
+TODO:
+    * Add -o feature@encryption=enabled and convert once 0.8.0 lands
+      https://github.com/zfsonlinux/zfs/pull/5769
+    * Add scrub and status cronjob, maybe zed
+    * Add SLOG and L2ARC
+    * Maybe automate snapshots
+    * TLER

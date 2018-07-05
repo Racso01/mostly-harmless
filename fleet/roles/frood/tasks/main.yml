@@ -20,7 +20,6 @@
 - apk:
     update_cache: yes
     name:
-      - alpine-base
       - e2fsprogs
       - joe
       - openntpd
@@ -28,7 +27,49 @@
       - parted
       - python
       - sfdisk
+      - strace
+      - tmux
+      - htop
+      - wget
+      - ca-certificates
+      - rsync
+      - tcpdump
       - sudo
+      - zfs
+      - eudev
+
+- name: enable udev for /dev/disk/by-uuid
+  service:
+    name: "{{ item }}"
+    enabled: yes
+    state: started
+    runlevel: sysinit
+  with_items:
+    - udev
+    - udev-trigger
+
+- name: load zfs module
+  lineinfile:
+    dest: /etc/modules
+    line: zfs
+  notify: modprobe zfs
+- name: /etc/fstab
+  copy:
+    dest: /etc/fstab
+    content: ""
+- name: enable zfs-mount
+  service:
+    name: "{{ item }}"
+    enabled: yes
+    state: started
+  with_items:
+    - zfs-mount
+    - zfs-import
+- name: DO_OVERLAY_MOUNTS=yes
+  lineinfile:
+    dest: /etc/conf.d/zfs
+    regexp: '^#?\s*DO_OVERLAY_MOUNTS'
+    line: "DO_OVERLAY_MOUNTS='yes'"
 
 - name: LBU_MEDIA
   lineinfile:
@@ -40,11 +81,6 @@
     dest: /etc/lbu/lbu.conf
     regexp: '^#?\s*BACKUP_LIMIT'
     line: "BACKUP_LIMIT=1024"
-
-- name: /etc/fstab
-  copy:
-    dest: /etc/fstab
-    src: fstab
 
 - name: /etc/ssh/authorized_keys
   file:
