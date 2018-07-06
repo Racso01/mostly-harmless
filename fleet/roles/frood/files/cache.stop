@@ -1,0 +1,4 @@
+#!/bin/sh
+
+apk cache -v sync
+return 0

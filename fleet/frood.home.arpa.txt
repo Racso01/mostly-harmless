@@ -1,3 +1,6 @@
+2x8TB WD Red shucked from My Book WDBBGB0080HBK-NESN; cut 3.3V SATA power cable because of
+https://www.hgst.com/sites/default/files/resources/HGST-Power-Disable-Pin-TB.pdf
+
 zpool create -O compression=lz4 -O atime=off -o ashift=12 -o autoexpand=on tank mirror sdb sdc
 zfs create -o mountpoint=none -o canmount=off tank/frood
 zfs create -o mountpoint=/var tank/frood/var
@@ -13,7 +16,6 @@ TODO:
       https://github.com/zfsonlinux/zfs/pull/5769
     * Add scrub and status cronjob, maybe zed
     * Maybe automate snapshots
-    * TLER
 
 
   pool: tank

@@ -1,0 +1,6 @@
+#!/bin/sh
+
+# http://open-zfs.org/wiki/Hardware#Error_recovery_control
+smartctl -l scterc,70,70 /dev/disk/by-id/ata-WDC_WD80EZAZ-11TDBA0_1SHNZ90Z
+smartctl -l scterc,70,70 /dev/disk/by-id/ata-WDC_WD80EZAZ-11TDBA0_1DGB761Z
+return 0
