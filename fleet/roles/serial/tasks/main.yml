@@ -11,5 +11,5 @@
 - lineinfile: dest=/etc/modules line=libcomposite
 - copy: src=usbgadget.sh dest=/usr/local/bin/usbgadget.sh mode=0755
 - copy: src=usbgadget.service dest=/etc/systemd/system/usbgadget.service
-- copy: src=alpine-frood-3.8f0-x86_64.iso dest=/var/lib/alpine-frood-x86_64.iso
+- copy: src=alpine-frood-3.8f1-x86_64.iso dest=/var/lib/alpine-frood-x86_64.iso
 - systemd: daemon_reload=yes name=usbgadget.service state=started enabled=yes

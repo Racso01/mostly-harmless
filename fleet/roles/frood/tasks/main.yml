@@ -24,9 +24,8 @@
       - joe
       - openntpd
       - openssh
-      - parted
+      - gptfdisk
       - python
-      - sfdisk
       - strace
       - tmux
       - htop
@@ -36,7 +35,11 @@
       - tcpdump
       - sudo
       - zfs
+      - zfs-udev
       - eudev
+      - ntfs-3g
+      - tree
+      - pv
 
 - name: enable udev for /dev/disk/by-uuid
   service:
@@ -61,7 +64,7 @@
   service:
     name: "{{ item }}"
     enabled: yes
-    state: started
+    # state: started # zfs-import is not idempotent
   with_items:
     - zfs-mount
     - zfs-import

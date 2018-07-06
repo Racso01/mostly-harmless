@@ -1,11 +1,48 @@
 zpool create -O compression=lz4 -O atime=off -o ashift=12 -o autoexpand=on tank mirror sdb sdc
 zfs create -o mountpoint=none -o canmount=off tank/frood
 zfs create -o mountpoint=/var tank/frood/var
+zfs create -o compression=gzip -o mountpoint=none -o canmount=off tank/backup
+zfs create -s -V 160041885696 tank/backup/AspireOne
+zfs create tank/misc
+chown filippo:filippo /tank/misc
+zpool add tank cache /dev/disk/by-partlabel/zfs-l2arc log /dev/disk/by-partlabel/zfs-slog
+
 
 TODO:
     * Add -o feature@encryption=enabled and convert once 0.8.0 lands
       https://github.com/zfsonlinux/zfs/pull/5769
     * Add scrub and status cronjob, maybe zed
-    * Add SLOG and L2ARC
     * Maybe automate snapshots
     * TLER
+
+
+  pool: tank
+ state: ONLINE
+  scan: none requested
+config:
+
+	NAME         STATE     READ WRITE CKSUM
+	tank         ONLINE       0     0     0
+	  mirror-0   ONLINE       0     0     0
+	    sdb      ONLINE       0     0     0
+	    sdc      ONLINE       0     0     0
+	logs
+	  zfs-slog   ONLINE       0     0     0
+	cache
+	  zfs-l2arc  ONLINE       0     0     0
+
+
+Disk /dev/sda: 117231408 sectors, 55.9 GiB
+Model: G2242
+Sector size (logical/physical): 512/512 bytes
+Disk identifier (GUID): FFB5BFF7-AA07-4B86-A4EC-422C1EF91A14
+Partition table holds up to 128 entries
+Main partition table begins at sector 2 and ends at sector 33
+First usable sector is 34, last usable sector is 117231374
+Partitions will be aligned on 2048-sector boundaries
+Total free space is 2014 sectors (1007.0 KiB)
+
+Number  Start (sector)    End (sector)  Size       Code  Name
+   1            2048         2097151   1023.0 MiB  8300  frood-apkovl-lbu
+   2         2097152         4194303   1024.0 MiB  A504  zfs-slog
+   3         4194304       117231374   53.9 GiB    A504  zfs-l2arc
