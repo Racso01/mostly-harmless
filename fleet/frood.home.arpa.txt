@@ -10,6 +10,8 @@ zfs create tank/misc
 chown filippo:filippo /tank/misc
 zpool add tank cache /dev/disk/by-partlabel/zfs-l2arc log /dev/disk/by-partlabel/zfs-slog
 
+sudo zfs snapshot -r tank@$(date -uIseconds)
+
 
 TODO:
     * Add -o feature@encryption=enabled and convert once 0.8.0 lands

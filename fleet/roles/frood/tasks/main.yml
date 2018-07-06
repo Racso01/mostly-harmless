@@ -41,6 +41,7 @@
       - tree
       - pv
       - smartmontools
+      - ncdu
 
 - name: enable udev for /dev/disk/by-uuid
   service:
@@ -120,3 +121,16 @@
     dest: /etc/passwd
     regexp: '^filippo:x:([^:\n]*):([^:\n]*):[^:\n]*:[^:\n]*:[^:\n]*$'
     replace: 'filippo:x:\1:\2:Filippo Valsorda:/var/empty:/bin/ash'
+
+- name: /etc/motd
+  copy:
+    dest: /etc/motd
+    src: motd
+- name: /etc/profile.d/motd.sh
+  copy:
+    dest: /etc/profile.d/motd.sh
+    src: motd.sh
+- name: color prompt
+  command: mv /etc/profile.d/color_prompt /etc/profile.d/color_prompt.sh
+  args:
+    creates: /etc/profile.d/color_prompt.sh

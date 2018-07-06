@@ -1,0 +1,3 @@
+echo
+zpool status
+echo
