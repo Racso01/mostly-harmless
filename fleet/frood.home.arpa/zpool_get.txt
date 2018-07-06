@@ -1,0 +1,4 @@
+NAME  PROPERTY    VALUE   SOURCE
+tank  size        7.25T   -
+tank  autoexpand  on      local
+tank  ashift      12      local

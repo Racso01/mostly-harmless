@@ -1,0 +1,23 @@
+GPT fdisk (gdisk) version 1.0.3
+
+Partition table scan:
+  MBR: protective
+  BSD: not present
+  APM: not present
+  GPT: present
+
+Found valid GPT with protective MBR; using GPT.
+Disk /dev/sda: 117231408 sectors, 55.9 GiB
+Model: G2242           
+Sector size (logical/physical): 512/512 bytes
+Disk identifier (GUID): FFB5BFF7-AA07-4B86-A4EC-422C1EF91A14
+Partition table holds up to 128 entries
+Main partition table begins at sector 2 and ends at sector 33
+First usable sector is 34, last usable sector is 117231374
+Partitions will be aligned on 2048-sector boundaries
+Total free space is 2014 sectors (1007.0 KiB)
+
+Number  Start (sector)    End (sector)  Size       Code  Name
+   1            2048         2097151   1023.0 MiB  8300  frood-apkovl-lbu
+   2         2097152         4194303   1024.0 MiB  A504  zfs-slog
+   3         4194304       117231374   53.9 GiB    A504  zfs-l2arc

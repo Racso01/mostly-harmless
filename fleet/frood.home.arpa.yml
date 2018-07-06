@@ -4,4 +4,10 @@
     - common
     - frood
   tasks:
+    - name: check lbu diff
+      shell: "lbu diff | grep -v 'Common subdirectories'"
+      changed_when: false
+      failed_when: false
+      register: lbu_diff
     - debug: msg="remember to run $ ssh frood.home.arpa sudo lbu ci"
+      when: lbu_diff.stdout

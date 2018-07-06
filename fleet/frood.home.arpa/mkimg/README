@@ -8,7 +8,7 @@ apparently is a mess: https://bugs.alpinelinux.org/issues/7285
 
 Also, this way we get a usable serial console without apkovl.
 
-$ docker build -t frood.home.arpa frood.home.arpa
-$ docker run -it --rm -v $PWD/roles/serial/files:/iso frood.home.arpa
+$ docker build -t mkimg-frood frood.home.arpa/mkimg
+$ docker run -it --rm -v $PWD/roles/serial/files:/iso mkimg-frood
 
 TODO: disarm the apk key, to make it useless across the network.

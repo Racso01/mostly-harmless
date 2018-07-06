@@ -82,6 +82,16 @@
     regexp: '^#?\s*DO_OVERLAY_MOUNTS'
     line: "DO_OVERLAY_MOUNTS='yes'"
 
+- name: zfs datasets owned by filippo
+  file:
+    state: directory
+    path: "{{ item }}"
+    owner: filippo
+    group: filippo
+  with_items:
+    - /tank/misc
+    - /tank/misc/AspireOne
+
 - name: LBU_MEDIA
   lineinfile:
     dest: /etc/lbu/lbu.conf
@@ -134,3 +144,40 @@
   command: mv /etc/profile.d/color_prompt /etc/profile.d/color_prompt.sh
   args:
     creates: /etc/profile.d/color_prompt.sh
+
+- name: zpool get
+  command: zpool get size,autoexpand,ashift
+  changed_when: false
+  register: zpool_get_result
+- local_action:
+    module: copy
+    content: "{{ zpool_get_result.stdout }}"
+    dest: "{{ inventory_hostname }}/zpool_get.txt"
+  become: false
+- name: zpool status
+  command: zpool status
+  changed_when: false
+  register: zpool_status_result
+- local_action:
+    module: copy
+    content: "{{ zpool_status_result.stdout }}"
+    dest: "{{ inventory_hostname }}/zpool_status.txt"
+  become: false
+- name: zfs list
+  command: zfs list -o name,mountpoint,canmount,compression,atime
+  changed_when: false
+  register: zfs_list_result
+- local_action:
+    module: copy
+    content: "{{ zfs_list_result.stdout }}"
+    dest: "{{ inventory_hostname }}/zfs_list.txt"
+  become: false
+- name: gdisk sda
+  command: gdisk -l /dev/sda
+  changed_when: false
+  register: gdisk_sda_result
+- local_action:
+    module: copy
+    content: "{{ gdisk_sda_result.stdout }}"
+    dest: "{{ inventory_hostname }}/gdisk_sda.txt"
+  become: false
