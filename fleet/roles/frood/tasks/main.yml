@@ -42,6 +42,8 @@
       - pv
       - smartmontools
       - ncdu
+      - busybox-static
+      - apk-tools-static
 
 - name: enable udev for /dev/disk/by-uuid
   service:
@@ -164,7 +166,7 @@
     dest: "{{ inventory_hostname }}/zpool_status.txt"
   become: false
 - name: zfs list
-  command: zfs list -o name,mountpoint,canmount,compression,atime
+  command: zfs list -o name,mountpoint,canmount,compression,atime,readonly
   changed_when: false
   register: zfs_list_result
 - local_action:

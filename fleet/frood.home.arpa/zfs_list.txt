@@ -1,10 +1,10 @@
-NAME                    MOUNTPOINT               CANMOUNT  COMPRESS  ATIME
-tank                    /tank                          on       lz4     on
-tank/backup             none                          off      gzip    off
-tank/backup/AspireOne   -                               -      gzip      -
-tank/backup/frood-sda1  /tank/backup/frood-sda1        on      gzip     on
-tank/frood              none                          off       lz4    off
-tank/frood/var          /var                           on       lz4     on
-tank/misc               /tank/misc                     on       lz4     on
-tank/misc/AspireOne     /tank/misc/AspireOne           on       lz4     on
-tank/plex               /tank/plex                     on       off     on
+NAME                    MOUNTPOINT               CANMOUNT  COMPRESS  ATIME  RDONLY
+tank                    /tank                          on       lz4     on     off
+tank/backup             none                          off      gzip    off      on
+tank/backup/AspireOne   -                               -      gzip      -      on
+tank/backup/frood-sda1  /tank/backup/frood-sda1        on      gzip     on      on
+tank/frood              none                          off       lz4    off     off
+tank/frood/var          /var                           on       lz4     on     off
+tank/misc               /tank/misc                     on       lz4     on     off
+tank/misc/AspireOne     /tank/misc/AspireOne           on       lz4     on     off
+tank/plex               /tank/plex                     on       off     on     off
