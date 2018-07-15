@@ -10,7 +10,10 @@ table inet filter {
         ct state invalid log group 0 drop
 
         iif lo accept
-        ip protocol { icmpv6, icmp, igmp } accept
+        ip protocol { icmp, igmp } accept
+        # https://ao2.it/en/blog/2018/04/27/nftables-experiments-icmpv6-hop-hop-options-header
+        ip6 nexthdr icmpv6 accept
+        hbh nexthdr icmpv6 accept
 
         tcp dport ssh ct state new log prefix "New SSH connection: " accept
 
