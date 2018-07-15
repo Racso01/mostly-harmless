@@ -8,9 +8,17 @@ luci-app-wireguard manually installed
 pkgupdate possibly frozen when luci-proto-wireguard in opkg-auto
 
 kresd
-Listens on *, breaking cross-interface UDP https://gitlab.labs.nic.cz/turris/turris-os-packages/issues/196
-Local workaround by listening on each interface instead in /etc/init.d/kresd
-    for name, addr_list in pairs(net.interfaces()) do
-            net.listen(addr_list)
-    end
-^ still requires "/etc/init.d/kresd restart" because first start is too early (?)
+Listens on *, breaking cross-interface UDP
+18:13:50.414824 IP 172.27.6.100.54672 > 172.27.1.1.domain: 60544+ [1au] A? turris.home.arpa. (57)
+18:13:50.425173 IP 172.27.6.1.domain > 172.27.6.100.54672: 60544 1/0/1 A 172.27.1.1 (61)
+https://gitlab.labs.nic.cz/turris/turris-os-packages/issues/196
+Local workaround by listening on 172.27.1.1 instead
+https://doc.turris.cz/doc/en/public/dns_knot_misc#adding_custom_configuration
+--- /etc/kresd/custom.conf
+net.listen(net["br-lan"])
+net.listen(net.lo)
+
+DHCP lease names don't work (while static leases do), no idea why, but I don't want to switch to dnsmasq
+https://forum.turris.cz/t/lan-hostnames-no-longer-available-solved-sortof/4546/5
+
+Unsure what port UDP 7001 is
