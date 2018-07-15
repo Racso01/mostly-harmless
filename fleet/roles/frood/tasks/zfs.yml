@@ -1,0 +1,98 @@
+---
+- apk:
+    name:
+      - e2fsprogs
+      - gptfdisk
+      - zfs
+      - zfs-udev
+      - eudev
+      - ntfs-3g
+      - smartmontools
+
+
+- name: enable udev for /dev/disk/by-uuid
+  service:
+    name: "{{ item }}"
+    enabled: yes
+    state: started
+    runlevel: sysinit
+  with_items:
+    - udev
+    - udev-trigger
+
+- name: /etc/local.d/tler.start
+  copy:
+    dest: /etc/local.d/tler.start
+    src: tler.start
+    mode: 0755
+
+- name: load zfs module
+  lineinfile:
+    dest: /etc/modules
+    line: zfs
+  notify: modprobe zfs
+- name: /etc/fstab
+  copy:
+    dest: /etc/fstab
+    content: ""
+- name: enable zfs-mount
+  service:
+    name: "{{ item }}"
+    enabled: yes
+    # state: started # zfs-import is not idempotent
+  with_items:
+    - zfs-mount
+    - zfs-import
+- name: DO_OVERLAY_MOUNTS=yes
+  lineinfile:
+    dest: /etc/conf.d/zfs
+    regexp: '^#?\s*DO_OVERLAY_MOUNTS'
+    line: "DO_OVERLAY_MOUNTS='yes'"
+
+- name: zfs datasets owned by filippo
+  file:
+    state: directory
+    path: "{{ item }}"
+    owner: filippo
+    group: filippo
+  with_items:
+    - /tank/misc
+    - /tank/misc/AspireOne
+
+
+- name: zpool get
+  command: zpool get size,autoexpand,ashift
+  changed_when: false
+  register: zpool_get_result
+- local_action:
+    module: copy
+    content: "{{ zpool_get_result.stdout }}"
+    dest: "{{ inventory_hostname }}/zpool_get.txt"
+  become: false
+- name: zpool status
+  command: zpool status
+  changed_when: false
+  register: zpool_status_result
+- local_action:
+    module: copy
+    content: "{{ zpool_status_result.stdout }}"
+    dest: "{{ inventory_hostname }}/zpool_status.txt"
+  become: false
+- name: zfs list
+  command: zfs list -o name,mountpoint,canmount,compression,atime,readonly
+  changed_when: false
+  register: zfs_list_result
+- local_action:
+    module: copy
+    content: "{{ zfs_list_result.stdout }}"
+    dest: "{{ inventory_hostname }}/zfs_list.txt"
+  become: false
+- name: gdisk sda
+  command: gdisk -l /dev/sda
+  changed_when: false
+  register: gdisk_sda_result
+- local_action:
+    module: copy
+    content: "{{ gdisk_sda_result.stdout }}"
+    dest: "{{ inventory_hostname }}/gdisk_sda.txt"
+  become: false

@@ -1,0 +1,39 @@
+---
+- apk:
+    name:
+      - nftables
+      - ulogd
+    
+- name: ulogd.conf
+  copy:
+    src: ulogd.conf
+    dest: /etc/ulogd.conf
+  notify: reload ulogd
+    
+- name: firewall.nft
+  copy:
+    src: firewall.nft
+    dest: /etc/firewall.nft
+  notify: reload nftables
+
+- name: save_on_stop = no
+  lineinfile:
+    dest: /etc/conf.d/nftables
+    regexp: '^#?\s*save_on_stop'
+    line: 'save_on_stop="no"'
+  notify: restart nftables
+- name: enable_forwarding = yes
+  lineinfile:
+    dest: /etc/conf.d/nftables
+    regexp: '^#?\s*enable_forwarding'
+    line: 'enable_forwarding="yes"'
+  notify: restart nftables
+
+- name: enable nftables and ulogd
+  service:
+    name: "{{ item }}"
+    enabled: yes
+    state: started
+  with_items:
+    - nftables
+    - ulogd
