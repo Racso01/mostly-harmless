@@ -93,5 +93,7 @@
 
 - name: zfs
   import_tasks: zfs.yml
+  tags: zfs
 - name: docker
   import_tasks: docker.yml
+  tags: docker

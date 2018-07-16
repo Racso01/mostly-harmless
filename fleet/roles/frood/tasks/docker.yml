@@ -3,6 +3,11 @@
     name:
       - nftables
       - ulogd
+      - docker
+      - py2-pip # le sigh
+
+- pip:
+    name: docker-py
     
 - name: ulogd.conf
   copy:
@@ -15,6 +20,13 @@
     src: firewall.nft
     dest: /etc/firewall.nft
   notify: reload nftables
+
+- name: DOCKER_OPTS
+  lineinfile:
+    dest: /etc/conf.d/docker
+    regexp: '^#?\s*DOCKER_OPTS'
+    line: 'DOCKER_OPTS="--iptables=false"'
+  notify: restart docker
 
 - name: save_on_stop = no
   lineinfile:
@@ -29,7 +41,7 @@
     line: 'enable_forwarding="yes"'
   notify: restart nftables
 
-- name: enable nftables and ulogd
+- name: enable nftables, ulogd and docker
   service:
     name: "{{ item }}"
     enabled: yes
@@ -37,3 +49,17 @@
   with_items:
     - nftables
     - ulogd
+    - docker
+
+- name: add filippo to docker
+  replace:
+    dest: /etc/group
+    regexp: '^docker:x:(\d+):[^:\n]*$'
+    replace: 'docker:x:\1:filippo'
+
+- docker_network:
+    name: routed
+    driver_options:
+      com.docker.network.bridge.name: docker1
+    ipam_options:
+      subnet: '172.28.0.0/16'

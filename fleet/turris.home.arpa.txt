@@ -2,6 +2,8 @@
 /etc/updater/conf.d/opkg-auto.lua
 /etc/updater/conf.d/user.lua
 
+Static route 172.37.0.0/16 -> 172.27.1.42 (frood static DHCP lease)
+
 Wireguard
 luci-proto-wireguard is broken https://gitlab.labs.nic.cz/turris/openwrt/issues/191
 luci-app-wireguard manually installed

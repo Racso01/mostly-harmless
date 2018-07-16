@@ -10,18 +10,25 @@ table inet filter {
         ct state invalid log group 0 drop
 
         iif lo accept
-        ip protocol { icmp, igmp } accept
+        ip protocol { icmp, igmp } counter accept
         # https://ao2.it/en/blog/2018/04/27/nftables-experiments-icmpv6-hop-hop-options-header
-        ip6 nexthdr icmpv6 accept
-        hbh nexthdr icmpv6 accept
+        ip6 nexthdr icmpv6 counter accept
+        hbh nexthdr icmpv6 counter accept
 
-        tcp dport ssh ct state new log prefix "New SSH connection: " accept
+        iifname "eth0" tcp dport ssh ct state new log prefix "New SSH connection: " accept
 
         log group 1 drop
     }
 
 	chain forward {
-        type filter hook forward priority 0; policy drop;
+        type filter hook forward priority 0;
+
+        ct state invalid log group 0 drop
+
+        iifname "docker1" oifname "eth0" ip version 4 ip daddr != 172.16.0.0/12 accept
+        iifname "eth0" oifname "docker1" ct state established,related accept
+
+        log group 1 drop
     }
 
 	chain output {
