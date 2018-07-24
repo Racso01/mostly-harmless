@@ -1,4 +1,4 @@
 #!/bin/sh
 
-apk cache -v sync
+apk cache -v download
 return 0
