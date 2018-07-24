@@ -79,7 +79,7 @@
     dest: "{{ inventory_hostname }}/zpool_status.txt"
   become: false
 - name: zfs list
-  command: zfs list -o name,mountpoint,canmount,compression,atime,readonly
+  command: zfs list -d 2 -o name,mountpoint,canmount,compression,atime,readonly
   changed_when: false
   register: zfs_list_result
 - local_action:

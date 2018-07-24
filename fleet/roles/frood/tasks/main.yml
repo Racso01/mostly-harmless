@@ -23,6 +23,7 @@
       - joe
       - openntpd
       - openssh
+      - mosh-server
       - python
       - strace
       - tmux

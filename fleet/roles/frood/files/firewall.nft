@@ -16,6 +16,7 @@ table inet filter {
         hbh nexthdr icmpv6 counter accept
 
         iifname "eth0" tcp dport ssh ct state new log prefix "New SSH connection: " accept
+        iifname "eth0" udp dport 60000-61000 counter accept # mosh
 
         log group 1 drop
     }
