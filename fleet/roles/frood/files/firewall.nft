@@ -18,6 +18,8 @@ table inet filter {
         iifname "eth0" tcp dport ssh ct state new log prefix "New SSH connection: " accept
         iifname "eth0" udp dport 60000-61000 counter accept # mosh
 
+        iifname "docker0" reject # quick fail the default docker network, as we can't remove it
+
         log group 1 drop
     }
 
@@ -28,6 +30,9 @@ table inet filter {
 
         iifname "docker1" oifname "eth0" ip version 4 ip daddr != 172.16.0.0/12 accept
         iifname "eth0" oifname "docker1" ct state established,related accept
+        iifname "docker1" ip daddr == 172.27.1.1 udp dport 53 accept
+
+        iifname "docker0" reject # quick fail the default docker network, as we can't remove it
 
         log group 1 drop
     }

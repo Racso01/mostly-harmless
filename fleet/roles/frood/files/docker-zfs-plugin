@@ -1,0 +1,10 @@
+#!/sbin/openrc-run
+
+command="/usr/local/bin/docker-zfs-plugin"
+command_args="--dataset-name tank/frood/docker-volumes"
+command_background="yes"
+pidfile="/run/docker-zfs-plugin.pid"
+
+depend() {
+	need zfs-mount
+}

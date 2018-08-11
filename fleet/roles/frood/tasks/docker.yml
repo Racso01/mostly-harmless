@@ -7,7 +7,7 @@
       - py2-pip # le sigh
 
 - pip:
-    name: docker-py
+    name: docker
     
 - name: ulogd.conf
   copy:
@@ -41,6 +41,18 @@
     line: 'enable_forwarding="yes"'
   notify: restart nftables
 
+# TODO: manual install of https://github.com/TrilliumIT/docker-zfs-plugin
+# built with GOOS=linux CGO_ENABLED=0 to /usr/local/bin/docker-zfs-plugin
+- name: /etc/init.d/docker-zfs-plugin
+  copy:
+    src: docker-zfs-plugin
+    dest: /etc/init.d/docker-zfs-plugin
+    mode: 0755
+- name: docker need docker-zfs-plugin
+  lineinfile:
+    path: /etc/conf.d/docker
+    line: "rc_need=docker-zfs-plugin"
+
 - name: enable nftables, ulogd and docker
   service:
     name: "{{ item }}"
@@ -49,7 +61,10 @@
   with_items:
     - nftables
     - ulogd
+    - docker-zfs-plugin
     - docker
+
+- meta: flush_handlers
 
 - name: add filippo to docker
   replace:
@@ -63,3 +78,28 @@
       com.docker.network.bridge.name: docker1
     ipam_options:
       subnet: '172.28.0.0/16'
+
+- name: sync /var/cache/docker
+  synchronize:
+    src: ../docker/
+    dest: /var/cache/docker/
+
+- docker_image:
+    name: frood.home.arpa/zcash
+    path: /var/cache/docker/zcash
+    tag: v1
+    network_mode: routed
+    # force: true # only during development
+
+- docker_container:
+    name: zcash
+    image: frood.home.arpa/zcash:v1
+    init: yes
+    interactive: yes
+    # read_only: yes
+    tty: yes
+    volume_driver: zfs
+    restart_policy: always
+    network_mode: routed
+    volumes:
+      - zcash-data:/home/zcash/zcash-data:rw
