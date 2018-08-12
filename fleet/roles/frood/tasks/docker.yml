@@ -106,11 +106,25 @@
     purge_networks: yes
     networks:
       - name: docker.home.arpa
-        ipv4_address: "{{ item.ip | default(omit) }}"
+        ipv4_address: "{{ item.ip | default(None) }}"
     volumes: "{{ item.volumes | default(omit) }}"
     env: "{{ item.env | default(omit) }}"
+    hostname: "{{ item.hostname | default(omit) }}"
     command: "{{ item.command | default(omit) }}"
     state: "{{ 'started' if item.get('run', True) else 'stopped' }}"
   with_items:
     - { name: zcash, tag: v1, it: true, volumes: [ "zcash-data:/home/zcash/zcash-data:rw" ], run: no }
     - { name: uredir, tag: v1, command: "-n :53 127.0.0.11:53", ip: "172.28.100.1" }
+    - name: plex
+      image: plexinc/pms-docker
+      tag: public
+      ro: false
+      ip: 172.28.100.2
+      hostname: Hooloovoo
+      volumes:
+        - "/tank/plex/media:/data"
+        - "/tank/plex/config:/config"
+        - "/tank/plex/transcode:/transcode"
+      env:
+        TZ: America/New_York
+        PLEX_CLAIM: claim-uQoth8ibCsevtGYCbi3P # expired, from https://www.plex.tv/claim/
