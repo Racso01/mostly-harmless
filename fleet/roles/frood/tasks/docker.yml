@@ -43,6 +43,9 @@
 
 # TODO: manual install of https://github.com/TrilliumIT/docker-zfs-plugin
 # built with GOOS=linux CGO_ENABLED=0 to /usr/local/bin/docker-zfs-plugin
+# --- /etc/apk/protected_paths.d/lbu.list
+# +usr/local/bin/docker-zfs-plugin
+# +etc/init.d/docker-zfs-plugin
 - name: /etc/init.d/docker-zfs-plugin
   copy:
     src: docker-zfs-plugin
@@ -113,7 +116,7 @@
     command: "{{ item.command | default(omit) }}"
     state: "{{ 'started' if item.get('run', True) else 'stopped' }}"
   with_items:
-    - { name: zcash, tag: v1, it: true, volumes: [ "zcash-data:/home/zcash/zcash-data:rw" ], run: no }
+    - { name: zcash, tag: v1, it: true, volumes: [ "zcash-data:/home/zcash/zcash-data:rw" ] }
     - { name: uredir, tag: v1, command: "-n :53 127.0.0.11:53", ip: "172.28.100.1" }
     - name: plex
       image: plexinc/pms-docker
