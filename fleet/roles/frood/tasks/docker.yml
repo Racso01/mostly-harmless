@@ -73,7 +73,7 @@
     replace: 'docker:x:\1:filippo'
 
 - docker_network:
-    name: routed
+    name: docker.home.arpa
     driver_options:
       com.docker.network.bridge.name: docker1
     ipam_options:
@@ -85,21 +85,32 @@
     dest: /var/cache/docker/
 
 - docker_image:
-    name: frood.home.arpa/zcash
-    path: /var/cache/docker/zcash
-    tag: v1
-    network_mode: routed
-    # force: true # only during development
+    name: "frood.home.arpa/{{ item.name }}"
+    path: "/var/cache/docker/{{ item.name }}"
+    tag: "{{ item.tag }}"
+    network_mode: docker.home.arpa
+    force: "{{ item.force | default(omit) }}"
+  with_items:
+    - { name: zcash, tag: v1 }
+    - { name: uredir, tag: v1 }
 
 - docker_container:
-    name: zcash
-    image: frood.home.arpa/zcash:v1
+    name: "{{ item.name }}"
+    image: "{{ item.image | default('frood.home.arpa/' + item.name) }}:{{ item.tag }}"
     init: yes
-    interactive: yes
-    # read_only: yes
-    tty: yes
+    interactive: "{{ item.it | default(omit) }}"
+    read_only: "{{ item.ro | default(True) }}"
+    tty: "{{ item.it | default(omit) }}"
     volume_driver: zfs
     restart_policy: always
-    network_mode: routed
-    volumes:
-      - zcash-data:/home/zcash/zcash-data:rw
+    purge_networks: yes
+    networks:
+      - name: docker.home.arpa
+        ipv4_address: "{{ item.ip | default(omit) }}"
+    volumes: "{{ item.volumes | default(omit) }}"
+    env: "{{ item.env | default(omit) }}"
+    command: "{{ item.command | default(omit) }}"
+    state: "{{ 'started' if item.get('run', True) else 'stopped' }}"
+  with_items:
+    - { name: zcash, tag: v1, it: true, volumes: [ "zcash-data:/home/zcash/zcash-data:rw" ], run: no }
+    - { name: uredir, tag: v1, command: "-n :53 127.0.0.11:53", ip: "172.28.100.1" }

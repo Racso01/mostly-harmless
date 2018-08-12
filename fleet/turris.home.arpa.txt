@@ -19,6 +19,9 @@ https://doc.turris.cz/doc/en/public/dns_knot_misc#adding_custom_configuration
 --- /etc/kresd/custom.conf
 net.listen(net["br-lan"])
 net.listen(net.lo)
+# https://github.com/moby/moby/issues/21169
+policy.add(policy.suffix(policy.FLAGS('NO_0X20'), {todname('docker.home.arpa')}))
+policy.add(policy.suffix(policy.STUB('172.28.100.1'), {todname('docker.home.arpa')}))
 
 DHCP lease names don't work (while static leases do), no idea why, but I don't want to switch to dnsmasq
 https://forum.turris.cz/t/lan-hostnames-no-longer-available-solved-sortof/4546/5
