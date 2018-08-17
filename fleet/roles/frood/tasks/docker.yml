@@ -96,6 +96,8 @@
   with_items:
     - { name: zcash, tag: v1 }
     - { name: uredir, tag: v1 }
+    - { name: "alpine-docs", tag: v1 }
+    - { name: sms, tag: v1 }
 
 - docker_container:
     name: "{{ item.name }}"
@@ -112,6 +114,7 @@
       - name: docker.home.arpa
         ipv4_address: "{{ item.ip | default(None) }}"
     volumes: "{{ item.volumes | default(omit) }}"
+    devices: "{{ item.devices | default(omit) }}"
     env: "{{ item.env | default(omit) }}"
     hostname: "{{ item.hostname | default(omit) }}"
     command: "{{ item.command | default(omit) }}"
@@ -119,6 +122,20 @@
   with_items:
     - { name: zcash, tag: v1, it: true, nolog: true, volumes: [ "zcash-data:/home/zcash/zcash-data:rw" ] }
     - { name: uredir, tag: v1, command: "-n :53 127.0.0.11:53", ip: "172.28.100.1" }
+    - name: "sms-44"
+      image: "frood.home.arpa/sms"
+      tag: v1
+      it: yes # no idea why, but it's required to get print output
+      command: "/dev/ttyUSB1"
+      devices:
+        - "/dev/ttyUSB1:/dev/ttyUSB1"
+    - name: "sms-39"
+      image: "frood.home.arpa/sms"
+      tag: v1
+      it: yes # no idea why, but it's required to get print output
+      command: "/dev/ttyUSB4"
+      devices:
+        - "/dev/ttyUSB4:/dev/ttyUSB4"
     - name: plex
       image: plexinc/pms-docker
       tag: public
@@ -131,4 +148,4 @@
         - "/tank/plex/transcode:/transcode"
       env:
         TZ: America/New_York
-        PLEX_CLAIM: claim-uQoth8ibCsevtGYCbi3P # expired, from https://www.plex.tv/claim/
+        PLEX_CLAIM: # expired, from https://www.plex.tv/claim/

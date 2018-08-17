@@ -36,6 +36,7 @@
       - tree
       - pv
       - ncdu
+      - usb-modeswitch-udev
       - busybox-static
       - apk-tools-static
 

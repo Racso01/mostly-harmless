@@ -16,10 +16,9 @@ Listens on *, breaking cross-interface UDP
 https://gitlab.labs.nic.cz/turris/turris-os-packages/issues/196
 Local workaround by listening on 172.27.1.1 instead
 https://doc.turris.cz/doc/en/public/dns_knot_misc#adding_custom_configuration
---- /etc/kresd/custom.conf
+--- /etc/kresd/custom.conf # https://github.com/moby/moby/issues/21169
 net.listen(net["br-lan"])
 net.listen(net.lo)
-# https://github.com/moby/moby/issues/21169
 policy.add(policy.suffix(policy.FLAGS('NO_0X20'), {todname('docker.home.arpa')}))
 policy.add(policy.suffix(policy.STUB('172.28.100.1'), {todname('docker.home.arpa')}))
 
