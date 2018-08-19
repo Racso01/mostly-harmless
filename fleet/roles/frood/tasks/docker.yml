@@ -96,6 +96,7 @@
   with_items:
     - { name: zcash, tag: v1 }
     - { name: uredir, tag: v1 }
+    - { name: sandstorm, tag: v1 }
     - { name: "alpine-docs", tag: v1 }
     - { name: sms, tag: v1 }
 
@@ -104,6 +105,7 @@
     image: "{{ item.image | default('frood.home.arpa/' + item.name) }}:{{ item.tag }}"
     init: yes
     interactive: "{{ item.it | default(omit) }}"
+    privileged: "{{ item.priv | default(omit) }}"
     read_only: "{{ item.ro | default(True) }}"
     tty: "{{ item.it | default(omit) }}"
     volume_driver: zfs
@@ -122,6 +124,12 @@
   with_items:
     - { name: zcash, tag: v1, it: true, nolog: true, volumes: [ "zcash-data:/home/zcash/zcash-data:rw" ] }
     - { name: uredir, tag: v1, command: "-n :53 127.0.0.11:53", ip: "172.28.100.1" }
+    - name: sandstorm
+      tag: v1
+      priv: yes
+      volumes:
+        - "/tank/sandstorm:/opt/sandstorm:rw"
+      ip: "172.28.100.3"
     - name: "sms-44"
       image: "frood.home.arpa/sms"
       tag: v1

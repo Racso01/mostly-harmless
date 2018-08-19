@@ -27,14 +27,10 @@ table inet filter {
         ct state established,related accept
         ct state invalid log group 0 drop
         iifname "docker0" counter reject # quick fail the default docker network, as we can't remove it
-        iifname "eth0" ip protocol icmp counter accept
-
+        iifname "eth0" accept
         # TODO: this does not block inter-container networking.
         iifname "docker1" ip version 4 ip daddr != 172.16.0.0/12 accept
         iifname "docker1" ip daddr == 172.27.1.1 udp dport 53 accept
-
-        ip daddr == 172.28.100.1 udp dport 53 accept # uredir
-        ip daddr == 172.28.100.2 tcp dport 32400 accept # plex
 
         log group 1 drop
     }
